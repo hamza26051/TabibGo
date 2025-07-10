@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUCUS Admin Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f5f5f5;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .form-signin {
+            width: 100%;
+            max-width: 400px;
+            padding: 15px;
+            margin: auto;
+        }
+        .form-signin .card {
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .form-signin .card-header {
+            background-color: #0066CC;
+            color: white;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+            padding: 20px;
+        }
+        .form-signin .card-body {
+            padding: 30px;
+        }
+        .form-signin .form-floating {
+            margin-bottom: 15px;
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+        }
+        .btn-primary {
+            background-color: #0066CC;
+            border-color: #0066CC;
+        }
+        .btn-primary:hover {
+            background-color: #0055AA;
+            border-color: #0055AA;
+        }
+        .toggle-form {
+            cursor: pointer;
+            color: #0066CC;
+        }
+        .toggle-form:hover {
+            text-decoration: underline;
+        }
+        .error-message {
+            color: #dc3545;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <main class="form-signin">
+        <div class="card">
+            <div class="card-header">
+                <img src="../assets/logo.png" alt="MUCUS Logo" class="logo">
+                <h1 class="h3 mb-0">MUCUS Admin Panel</h1>
+            </div>
+            <div class="card-body">
+                <!-- Login Form -->
+                <form id="login-form" class="needs-validation">
+                    <h2 class="h4 mb-3 fw-normal text-center">Please sign in</h2>
+                    
+                    <div class="form-floating">
+                        <input type="email" class="form-control" id="login-email" placeholder="name@example.com" required>
+                        <label for="login-email">Email address</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="password" class="form-control" id="login-password" placeholder="Password" required>
+                        <label for="login-password">Password</label>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" type="submit">Sign in</button>
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <p>Don't have an account? <span class="toggle-form" id="show-signup">Sign up</span></p>
+                    </div>
+                    
+                    <div class="error-message" id="login-error"></div>
+                </form>
+                
+                <!-- Signup Form -->
+                <form id="signup-form" class="needs-validation" style="display: none;">
+                    <h2 class="h4 mb-3 fw-normal text-center">Create admin account</h2>
+                    
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="signup-username" placeholder="Username" required>
+                        <label for="signup-username">Username</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="email" class="form-control" id="signup-email" placeholder="name@example.com" required>
+                        <label for="signup-email">Email address</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="password" class="form-control" id="signup-password" placeholder="Password" required>
+                        <label for="signup-password">Password</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="password" class="form-control" id="admin-code" placeholder="Admin Code" required>
+                        <label for="admin-code">Admin Verification Code</label>
+                        <small class="form-text text-muted">Enter MUCUS2023 as the admin code</small>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" type="submit">Sign up</button>
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <p>Already have an account? <span class="toggle-form" id="show-login">Sign in</span></p>
+                    </div>
+                    
+                    <div class="error-message" id="signup-error"></div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCYv4q2dMLJE-Kllgvm5J73yQi6Pe0B0do",
+            authDomain: "mucus-aeb30.firebaseapp.com",
+            projectId: "mucus-aeb30",
+            storageBucket: "mucus-aeb30.appspot.com",
+            messagingSenderId: "781785384393",
+            appId: "1:781785384393:web:908ddccd6567008c7ad418",
+            measurementId: "G-H0FZYER25N"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Toggle between login and signup forms
+        document.getElementById('show-signup').addEventListener('click', () => {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('signup-form').style.display = 'block';
+        });
+
+        document.getElementById('show-login').addEventListener('click', () => {
+            document.getElementById('signup-form').style.display = 'none';
+            document.getElementById('login-form').style.display = 'block';
+        });
+
+        // Login form submission
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorElement = document.getElementById('login-error');
+            
+            try {
+                // Sign in with email and password
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                
+                // Check if user is admin
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (!userDoc.exists() || !userDoc.data().isAdmin) {
+                    // Show error if not admin
+                    errorElement.textContent = 'Access denied. You are not registered as an admin.';
+                    errorElement.style.display = 'block';
+                    await auth.signOut();
+                } else {
+                    // Redirect to dashboard if admin
+                    window.location.href = 'dashboard.html';
+                }
+            } catch (error) {
+                // Handle errors
+                console.error('Login error:', error);
+                errorElement.textContent = getErrorMessage(error.code);
+                errorElement.style.display = 'block';
+            }
+        });
+
+        // Signup form submission
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('signup-username').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const adminCode = document.getElementById('admin-code').value;
+            const errorElement = document.getElementById('signup-error');
+            
+            // Verify admin code
+            if (adminCode !== 'MUCUS2023') {
+                errorElement.textContent = 'Invalid admin verification code.';
+                errorElement.style.display = 'block';
+                return;
+            }
+            
+            try {
+                // Create user with email and password
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                
+                // Create a user profile document in Firestore with admin flag
+                await setDoc(doc(db, 'users', user.uid), {
+                    username,
+                    email,
+                    isAdmin: true,
+                    createdAt: new Date()
+                });
+                
+                // Redirect to dashboard
+                window.location.href = 'dashboard.html';
+            } catch (error) {
+                // Handle errors
+                console.error('Signup error:', error);
+                errorElement.textContent = getErrorMessage(error.code);
+                errorElement.style.display = 'block';
+            }
+        });
+
+        // Helper function to get user-friendly error messages
+        function getErrorMessage(errorCode) {
+            switch (errorCode) {
+                case 'auth/invalid-email':
+                    return 'Invalid email address format.';
+                case 'auth/user-disabled':
+                    return 'This account has been disabled.';
+                case 'auth/user-not-found':
+                    return 'No account found with this email.';
+                case 'auth/wrong-password':
+                    return 'Incorrect password.';
+                case 'auth/email-already-in-use':
+                    return 'Email address is already in use.';
+                case 'auth/weak-password':
+                    return 'Password is too weak. Use at least 6 characters.';
+                default:
+                    return 'An error occurred. Please try again.';
+            }
+        }
+    </script>
+</body>
+</html>

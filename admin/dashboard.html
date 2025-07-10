@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUCUS Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 48px 0 0;
+            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+            background-color: #fff;
+        }
+        .sidebar-sticky {
+            position: relative;
+            top: 0;
+            height: calc(100vh - 48px);
+            padding-top: 0.5rem;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        .sidebar .nav-link {
+            font-weight: 500;
+            color: #333;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.25rem;
+        }
+        .sidebar .nav-link.active {
+            color: #0066CC;
+            background-color: rgba(0, 102, 204, 0.1);
+        }
+        .sidebar .nav-link:hover {
+            color: #0066CC;
+            background-color: rgba(0, 102, 204, 0.05);
+        }
+        .sidebar .nav-link i {
+            margin-right: 10px;
+        }
+        .navbar {
+            background-color: #0066CC !important;
+        }
+        .navbar-brand {
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+            font-size: 1rem;
+            background-color: rgba(0, 0, 0, .25);
+            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
+        }
+        .navbar .navbar-toggler {
+            top: 0.25rem;
+            right: 1rem;
+        }
+        .navbar .form-control {
+            padding: 0.75rem 1rem;
+            border-width: 0;
+            border-radius: 0;
+        }
+        .main-content {
+            padding-top: 70px;
+        }
+        .card {
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+        }
+        .stats-card {
+            text-align: center;
+            padding: 15px;
+        }
+        .stats-card i {
+            font-size: 2rem;
+            color: #0066CC;
+            margin-bottom: 10px;
+        }
+        .stats-card .stats-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stats-card .stats-text {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .section-title {
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: 600;
+        }
+        .table-responsive {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .table {
+            margin-bottom: 0;
+        }
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .action-btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+        .logo-small {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+        .document-preview {
+            max-width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .document-preview-container {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">
+            <img src="../assets/logo.png" alt="MUCUS Logo" class="logo-small">
+            MUCUS Admin
+        </a>
+        <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="w-100"></div>
+        <div class="navbar-nav">
+            <div class="nav-item text-nowrap">
+                <a class="nav-link px-3" href="#" id="logout-btn"><i class="bi bi-box-arrow-right"></i> Sign out</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="sidebar-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#dashboard-section" data-section="dashboard-section">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#users-section" data-section="users-section">
+                                <i class="bi bi-people"></i> Users
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#admins-section" data-section="admins-section">
+                                <i class="bi bi-person-badge-fill"></i> Admins
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#doctors-section" data-section="doctors-section">
+                                <i class="bi bi-person-badge"></i> Doctors
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#doctor-verification-section" data-section="doctor-verification-section">
+                                <i class="bi bi-check-circle"></i> Doctor Verification
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#appointments-section" data-section="appointments-section">
+                                <i class="bi bi-calendar-check"></i> Appointments
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#support-section" data-section="support-section">
+                                <i class="bi bi-chat-dots"></i> Support Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#settings-section" data-section="settings-section">
+                                <i class="bi bi-gear"></i> Settings
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                <!-- Dashboard Section -->
+                <section id="dashboard-section" class="content-section active-section">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Dashboard</h1>
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <div class="btn-group me-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+                                <i class="bi bi-calendar"></i> This week
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card stats-card">
+                                <i class="bi bi-people"></i>
+                                <div class="stats-number">0</div>
+                                <div class="stats-text">Total Users</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card stats-card">
+                                <i class="bi bi-person-badge"></i>
+                                <div class="stats-number">0</div>
+                                <div class="stats-text">Total Doctors</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card stats-card">
+                                <i class="bi bi-calendar-check"></i>
+                                <div class="stats-number">0</div>
+                                <div class="stats-text">Appointments</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card stats-card">
+                                <i class="bi bi-graph-up"></i>
+                                <div class="stats-number">0</div>
+                                <div class="stats-text">Completed Visits</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="card">
+                        <div class="card-header">
+                            Recent Activity
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>User</th>
+                                            <th>Activity</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recent-activity-table">
+                                        <tr>
+                                            <td colspan="4" class="text-center">No recent activity</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Users Section -->
+                <section id="users-section" class="content-section d-none">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Users Management</h1>
+                        <button class="btn btn-primary" id="add-user-btn">
+                            <i class="bi bi-person-plus"></i> Add New User
+                        </button>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            All Users
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>User Name</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Last Request</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="users-table">
+                                        <tr>
+                                            <td colspan="6" class="text-center">No patients found</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Admins Section -->
+                <section id="admins-section" class="content-section d-none">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Admins Management</h1>
+                        <button class="btn btn-primary" id="add-admin-btn">
+                            <i class="bi bi-person-plus"></i> Add New Admin
+                        </button>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            All Admins
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Admin Name</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admins-table">
+                                        <tr>
+                                            <td colspan="4" class="text-center">No admins found</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Doctors Section -->
+                <section id="doctors-section" class="content-section d-none">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Doctors Management</h1>
+                        <button class="btn btn-primary" id="add-doctor-btn">
+                            <i class="bi bi-person-plus"></i> Add New Doctor
+                        </button>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            All Doctors
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Specialty</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="doctors-table">
+                                        <tr>
+                                            <td colspan="6" class="text-center">No doctors found</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Doctor Verification Section -->
+                <section id="doctor-verification-section" class="content-section d-none">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Doctor Verification Requests</h1>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            Pending Verification Requests
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Specialty</th>
+                                            <th>Submission Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="verification-requests-table">
+                                        <tr>
+                                            <td colspan="5" class="text-center">No pending verification requests</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Appointments Section -->
+                <section id="appointments-section" class="content-section d-none">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Appointments Management</h1>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row align-items-center">
+                                <div class="col-md-3 mb-2 mb-md-0">
+                                    <input type="text" id="appointment-search" class="form-control" placeholder="Search by patient or doctor username...">
+                                </div>
+                                <div class="col-md-3 mb-2 mb-md-0">
+                                    <select id="appointment-sort" class="form-select">
+                                        <option value="latest">Latest to Oldest</option>
+                                        <option value="oldest">Oldest to Latest</option>
+                                        <option value="patient_az">Patient Name A-Z</option>
+                                        <option value="patient_za">Patient Name Z-A</option>
+                                        <option value="doctor_az">Doctor Name A-Z</option>
+                                        <option value="doctor_za">Doctor Name Z-A</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mt-2"><small>Sort and search by patient/doctor username. All names shown are usernames.</small></div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Time</th>
+                                            <th>Patient</th>
+                                            <th>Doctor</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="appointments-table">
+                                        <tr>
+                                            <td colspan="6" class="text-center">No appointments found</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <!-- Support Section -->
+                <section id="support-section" class="content-section d-none">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Support Dashboard</h1>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            Support Ticket Management
+                        </div>
+                        <div class="card-body text-center">
+                            <p class="mb-4">Access the support ticket management system to handle user inquiries and issues.</p>
+                            <a href="support-dashboard.html" class="btn btn-primary btn-lg">
+                                <i class="bi bi-chat-dots me-2"></i>Open Support Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Settings Section -->
+                <section id="settings-section" class="content-section d-none">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Settings</h1>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            System Settings
+                        </div>
+                        <div class="card-body">
+                            <form id="settings-form">
+                                <div class="mb-3">
+                                    <label for="admin-code" class="form-label">Admin Verification Code</label>
+                                    <input type="password" class="form-control" id="admin-code" placeholder="Current: MUCUS2023">
+                                    <small class="form-text text-muted">This code is required for admin signup.</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="system-email" class="form-label">System Email</label>
+                                    <input type="email" class="form-control" id="system-email" placeholder="Enter system email">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Settings</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Doctor Verification Modal -->
+    <div class="modal fade" id="verificationModal" tabindex="-1" aria-labelledby="verificationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="verificationModalLabel">Doctor Verification Documents</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="verification-modal-content">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" id="reject-verification-btn">Reject</button>
+                    <button type="button" class="btn btn-success" id="approve-verification-btn">Approve</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, getDoc, query, where, orderBy, updateDoc, Timestamp, setDoc, addDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { getStorage, ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-storage.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCYv4q2dMLJE-Kllgvm5J73yQi6Pe0B0do",
+            authDomain: "mucus-aeb30.firebaseapp.com",
+            projectId: "mucus-aeb30",
+            storageBucket: "mucus-aeb30.appspot.com",
+            messagingSenderId: "781785384393",
+            appId: "1:781785384393:web:908ddccd6567008c7ad418",
+            measurementId: "G-H0FZYER25N"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // Check authentication state
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Check if user is admin
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (!userDoc.exists() || !userDoc.data().isAdmin) {
+                    // Redirect to login if not admin
+                    window.location.href = 'index.html';
+                } else {
+                    // User is authenticated and is admin
+                    console.log('Admin logged in:', user.email);
+                    // Load dashboard data
+                    loadDashboardData();
+                }
+            } else {
+                // User is not logged in, redirect to login page
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Logout functionality
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Error signing out:', error);
+            }
+        });
+
+        // Navigation functionality
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all links
+                document.querySelectorAll('.nav-link').forEach(el => {
+                    el.classList.remove('active');
+                });
+                
+                // Add active class to clicked link
+                this.classList.add('active');
+                
+                // Hide all sections
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.add('d-none');
+                    section.classList.remove('active-section');
+                });
+                
+                // Show selected section
+                const targetSection = this.getAttribute('data-section');
+                const sectionElement = document.getElementById(targetSection);
+                sectionElement.classList.remove('d-none');
+                sectionElement.classList.add('active-section');
+                
+                // Load section data if needed
+                if (targetSection === 'users-section') {
+                    loadUsers();
+                } else if (targetSection === 'admins-section') {
+                    loadAdmins();
+                } else if (targetSection === 'doctors-section') {
+                    loadDoctors();
+                } else if (targetSection === 'appointments-section') {
+                    loadAppointments();
+                } else if (targetSection === 'doctor-verification-section') {
+                    loadVerificationRequests();
+                }
+            });
+        });
+
+        // Replace loadDashboardData with real Firestore queries for stats and recent activity
+        async function loadDashboardData() {
+          try {
+            const statsNumbers = document.querySelectorAll('.stats-number');
+            const activityTable = document.getElementById('recent-activity-table');
+            activityTable.innerHTML = '<tr><td colspan="4" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>';
+
+            // Fetch users
+            const usersSnapshot = await getDocs(collection(db, 'users'));
+            let totalUsers = 0;
+            let totalDoctors = 0;
+            let userMap = {};
+            usersSnapshot.forEach((doc) => {
+              const data = doc.data();
+              userMap[doc.id] = data.username || data.name || data.email || 'N/A';
+              if (!data.isAdmin) totalUsers++;
+              if (data.isDoctor) totalDoctors++;
+            });
+            console.log('User count:', totalUsers, 'Doctor count:', totalDoctors);
+
+            // Fetch appointments
+            const appointmentsSnapshot = await getDocs(collection(db, 'doctorPatientMatches'));
+            let totalAppointments = 0;
+            let completedVisits = 0;
+            let activities = [];
+            appointmentsSnapshot.forEach((doc) => {
+              const data = doc.data();
+              totalAppointments++;
+              if (data.status === 'completed') completedVisits++;
+              // Robust date handling for createdAt
+              let createdAt = null;
+              if (data.createdAt) {
+                if (typeof data.createdAt.toDate === 'function') {
+                  createdAt = data.createdAt.toDate();
+                } else if (data.createdAt instanceof Date) {
+                  createdAt = data.createdAt;
+                } else if (typeof data.createdAt === 'string' || typeof data.createdAt === 'number') {
+                  createdAt = new Date(data.createdAt);
+                }
+              }
+              if (createdAt) {
+                activities.push({
+                  date: createdAt,
+                  user: userMap[data.patientId] || 'N/A',
+                  activity: 'New appointment created',
+                  status: data.status === 'completed' ? 'Completed' : 'Active',
+                });
+              }
+              // Robust date handling for completedAt
+              let completedAt = null;
+              if (data.completedAt) {
+                if (typeof data.completedAt.toDate === 'function') {
+                  completedAt = data.completedAt.toDate();
+                } else if (data.completedAt instanceof Date) {
+                  completedAt = data.completedAt;
+                } else if (typeof data.completedAt === 'string' || typeof data.completedAt === 'number') {
+                  completedAt = new Date(data.completedAt);
+                }
+              }
+              if (completedAt) {
+                activities.push({
+                  date: completedAt,
+                  user: userMap[data.patientId] || 'N/A',
+                  activity: 'Appointment completed',
+                  status: 'Completed',
+                });
+              }
+            });
+            console.log('Appointment count:', totalAppointments, 'Completed visits:', completedVisits);
+
+            // Fetch new users (last 10 by createdAt if available)
+            usersSnapshot.forEach((doc) => {
+              const data = doc.data();
+              let userCreatedAt = null;
+              if (data.createdAt) {
+                if (typeof data.createdAt.toDate === 'function') {
+                  userCreatedAt = data.createdAt.toDate();
+                } else if (data.createdAt instanceof Date) {
+                  userCreatedAt = data.createdAt;
+                } else if (typeof data.createdAt === 'string' || typeof data.createdAt === 'number') {
+                  userCreatedAt = new Date(data.createdAt);
+                }
+              }
+              if (userCreatedAt) {
+                activities.push({
+                  date: userCreatedAt,
+                  user: data.username || data.name || data.email || 'N/A',
+                  activity: data.isDoctor ? 'New doctor registered' : 'New user registered',
+                  status: data.isDoctor ? 'Doctor' : 'User',
+                });
+              }
+            });
+
+            // Sort activities by date descending, take latest 10
+            activities = activities.filter(a => a.date && !isNaN(a.date.getTime()));
+            activities.sort((a, b) => b.date - a.date);
+            const latestActivities = activities.slice(0, 10);
+
+            // Update stats cards
+            statsNumbers[0].textContent = totalUsers;
+            statsNumbers[1].textContent = totalDoctors;
+            statsNumbers[2].textContent = totalAppointments;
+            statsNumbers[3].textContent = completedVisits;
+
+            // Update recent activity table
+            if (latestActivities.length === 0) {
+              activityTable.innerHTML = '<tr><td colspan="4" class="text-center">No recent activity</td></tr>';
+            } else {
+              activityTable.innerHTML = latestActivities.map(act => `
+                <tr>
+                  <td>${act.date ? act.date.toLocaleDateString() : 'N/A'}</td>
+                  <td>${act.user}</td>
+                  <td>${act.activity}</td>
+                  <td><span class="badge bg-${act.status === 'Completed' ? 'success' : act.status === 'Active' ? 'primary' : act.status === 'Doctor' ? 'info' : 'secondary'}">${act.status}</span></td>
+                </tr>
+              `).join('');
+            }
+          } catch (error) {
+            console.error('Error loading dashboard data:', error);
+            const activityTable = document.getElementById('recent-activity-table');
+            activityTable.innerHTML = `<tr><td colspan="4" class="text-center text-danger">Error loading dashboard data: ${error.message}</td></tr>`;
+          }
+        }
+
+        // Load users data
+        async function loadUsers() {
+            try {
+                console.log('Loading all users data from Firestore...');
+                
+                // Show loading indicator
+                const usersTable = document.getElementById('users-table');
+                usersTable.innerHTML = '<tr><td colspan="6" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>';
+                
+                // Get users collection from Firestore (excluding admins)
+                const usersQuery = query(collection(db, 'users'));
+                const usersSnapshot = await getDocs(usersQuery);
+                
+                if (usersSnapshot.empty) {
+                    usersTable.innerHTML = '<tr><td colspan="6" class="text-center">No users found</td></tr>';
+                    return;
+                }
+                
+                // Clear the table
+                usersTable.innerHTML = '';
+                
+                let userCount = 0;
+                
+                // Add each user to the table (excluding admins)
+                usersSnapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    const userId = doc.id;
+                    
+                    // Skip admin users as they have their own section
+                    if (userData.isAdmin === true) {
+                        return;
+                    }
+                    
+                    userCount++;
+                    
+                    // Get last request date if available
+                    const lastRequest = userData.lastRequestDate ? new Date(userData.lastRequestDate.toDate()).toLocaleDateString() : 'No requests';
+                    
+                    // Determine status based on appointments or requests
+                    let status = 'New';
+                    let statusClass = 'bg-primary';
+                    
+                    if (userData.activeRequest) {
+                        status = 'Active Request';
+                        statusClass = 'bg-warning text-dark';
+                    } else if (userData.lastCompletedVisit) {
+                        status = 'Completed';
+                        statusClass = 'bg-success';
+                    }
+                    
+                    // Check if user is also a doctor or admin
+                    const isDoctor = userData.isDoctor === true;
+                    const isAdmin = userData.isAdmin === true;
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>
+                            ${userData.username || 'N/A'}
+                            ${isDoctor ? '<span class="badge bg-info ms-2">Doctor</span>' : ''}
+                            ${isAdmin ? '<span class="badge bg-dark ms-2">Admin</span>' : ''}
+                        </td>
+                        <td>${userData.email || 'N/A'}</td>
+                        <td>${userData.phone || 'N/A'}</td>
+                        <td>${lastRequest}</td>
+                        <td><span class="badge ${statusClass}">${status}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-info action-btn view-history-btn" data-user-id="${userId}">View History</button>
+                            <button class="btn btn-sm btn-outline-primary action-btn edit-user-btn" data-user-id="${userId}">Edit</button>
+                            <button class="btn btn-sm btn-outline-danger action-btn delete-user-btn" data-user-id="${userId}">Delete</button>
+                        </td>
+                    `;
+                    usersTable.appendChild(row);
+                });
+                
+                // Add event listeners to the View History buttons
+                document.querySelectorAll('.view-history-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const userId = e.target.getAttribute('data-user-id');
+                        showUserHistory(userId);
+                    });
+                });
+                
+                // Add event listeners to the Edit buttons
+                document.querySelectorAll('.edit-user-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const userId = e.target.getAttribute('data-user-id');
+                        alert(`Edit user functionality for user ID: ${userId} will be implemented here.`);
+                    });
+                });
+                
+                // Add event listeners to the Delete buttons
+                document.querySelectorAll('.delete-user-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const userId = e.target.getAttribute('data-user-id');
+                        alert(`Delete user functionality for user ID: ${userId} will be implemented here.`);
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Error loading users data:', error);
+                const usersTable = document.getElementById('users-table');
+                usersTable.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error loading users: ${error.message}</td></tr>`;
+            }
+        }
+        
+        // Load admins data
+        async function loadAdmins() {
+            try {
+                console.log('Loading admins data from Firestore...');
+                
+                // Show loading indicator
+                const adminsTable = document.getElementById('admins-table');
+                adminsTable.innerHTML = '<tr><td colspan="4" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>';
+                
+                // Get users collection from Firestore (only admins)
+                const usersQuery = query(collection(db, 'users'));
+                const usersSnapshot = await getDocs(usersQuery);
+                
+                if (usersSnapshot.empty) {
+                    adminsTable.innerHTML = '<tr><td colspan="4" class="text-center">No admins found</td></tr>';
+                    return;
+                }
+                
+                // Clear the table
+                adminsTable.innerHTML = '';
+                
+                let adminCount = 0;
+                
+                // Add each admin to the table
+                usersSnapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    const userId = doc.id;
+                    
+                    // Only include admin users
+                    if (userData.isAdmin !== true) {
+                        return;
+                    }
+                    
+                    adminCount++;
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${userData.username || 'N/A'}</td>
+                        <td>${userData.email || 'N/A'}</td>
+                        <td>${userData.phone || 'N/A'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary action-btn edit-admin-btn" data-user-id="${userId}">Edit</button>
+                            <button class="btn btn-sm btn-outline-danger action-btn delete-admin-btn" data-user-id="${userId}">Delete</button>
+                        </td>
+                    `;
+                    adminsTable.appendChild(row);
+                });
+                
+                if (adminCount === 0) {
+                    adminsTable.innerHTML = '<tr><td colspan="4" class="text-center">No admins found</td></tr>';
+                }
+                
+                // Add event listeners to the Edit buttons
+                document.querySelectorAll('.edit-admin-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const userId = e.target.getAttribute('data-user-id');
+                        alert(`Edit admin functionality for user ID: ${userId} will be implemented here.`);
+                    });
+                });
+                
+                // Add event listeners to the Delete buttons
+                document.querySelectorAll('.delete-admin-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const userId = e.target.getAttribute('data-user-id');
+                        alert(`Delete admin functionality for user ID: ${userId} will be implemented here.`);
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Error loading admins data:', error);
+                const adminsTable = document.getElementById('admins-table');
+                adminsTable.innerHTML = `<tr><td colspan="4" class="text-center text-danger">Error loading admins: ${error.message}</td></tr>`;
+            }
+        }
+
+        // Load doctors data
+        async function loadDoctors() {
+            try {
+                console.log('Loading doctors data from Firestore...');
+                
+                // Show loading indicator
+                const doctorsTable = document.getElementById('doctors-table');
+                doctorsTable.innerHTML = '<tr><td colspan="6" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>';
+                
+                // Get doctors collection from Firestore
+                const doctorsQuery = query(collection(db, 'users'), where("isDoctor", "==", true));
+                const doctorsSnapshot = await getDocs(doctorsQuery);
+                
+                if (doctorsSnapshot.empty) {
+                    doctorsTable.innerHTML = '<tr><td colspan="6" class="text-center">No doctors found</td></tr>';
+                    return;
+                }
+                
+                // Clear the table
+                doctorsTable.innerHTML = '';
+                
+                // Add each doctor to the table
+                doctorsSnapshot.forEach((doc) => {
+                    const doctorData = doc.data();
+                    const doctorId = doc.id;
+                    
+                    // Determine status
+                    let status = 'Active';
+                    let statusClass = 'bg-success';
+                    
+                    if (doctorData.onLeave) {
+                        status = 'On Leave';
+                        statusClass = 'bg-warning text-dark';
+                    } else if (doctorData.inactive) {
+                        status = 'Inactive';
+                        statusClass = 'bg-danger';
+                    }
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>Dr. ${doctorData.username || 'N/A'}</td>
+                        <td>${doctorData.specialty || 'N/A'}</td>
+                        <td>${doctorData.email || 'N/A'}</td>
+                        <td>${doctorData.phone || 'N/A'}</td>
+                        <td><span class="badge ${statusClass}">${status}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-info action-btn view-doctor-btn" data-doctor-id="${doctorId}">View</button>
+                            <button class="btn btn-sm btn-outline-primary action-btn edit-doctor-btn" data-doctor-id="${doctorId}">Edit</button>
+                            <button class="btn btn-sm btn-outline-danger action-btn delete-doctor-btn" data-doctor-id="${doctorId}">Delete</button>
+                        </td>
+                    `;
+                    doctorsTable.appendChild(row);
+                });
+                
+                // Add event listeners to buttons
+                document.querySelectorAll('.view-doctor-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const doctorId = e.target.getAttribute('data-doctor-id');
+                        alert(`View doctor functionality for doctor ID: ${doctorId} will be implemented here.`);
+                    });
+                });
+                
+                document.querySelectorAll('.edit-doctor-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const doctorId = e.target.getAttribute('data-doctor-id');
+                        alert(`Edit doctor functionality for doctor ID: ${doctorId} will be implemented here.`);
+                    });
+                });
+                
+                document.querySelectorAll('.delete-doctor-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const doctorId = e.target.getAttribute('data-doctor-id');
+                        alert(`Delete doctor functionality for doctor ID: ${doctorId} will be implemented here.`);
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Error loading doctors data:', error);
+                const doctorsTable = document.getElementById('doctors-table');
+                doctorsTable.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error loading doctors: ${error.message}</td></tr>`;
+            }
+        }
+
+        // Load verification requests
+        async function loadVerificationRequests() {
+            try {
+                console.log('Loading doctor verification requests from Firestore...');
+                
+                // Show loading indicator
+                const requestsTable = document.getElementById('verification-requests-table');
+                requestsTable.innerHTML = '<tr><td colspan="5" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>';
+                
+                // Get verification requests from Firestore
+                const requestsQuery = query(collection(db, 'doctorVerifications'), where("status", "==", "pending"));
+                const requestsSnapshot = await getDocs(requestsQuery);
+                
+                if (requestsSnapshot.empty) {
+                    requestsTable.innerHTML = '<tr><td colspan="5" class="text-center">No pending verification requests</td></tr>';
+                    return;
+                }
+                
+                // Clear the table
+                requestsTable.innerHTML = '';
+                
+                // Add each verification request to the table
+                requestsSnapshot.forEach((doc) => {
+                    const requestData = doc.data();
+                    const requestId = doc.id;
+                    
+                    const submissionDate = requestData.submissionDate ? new Date(requestData.submissionDate.toDate()).toLocaleDateString() : 'N/A';
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${requestData.name || 'N/A'}</td>
+                        <td>${requestData.email || 'N/A'}</td>
+                        <td>${requestData.specialty || 'N/A'}</td>
+                        <td>${submissionDate}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-info action-btn view-verification-btn" data-request-id="${requestId}">View Documents</button>
+                        </td>
+                    `;
+                    requestsTable.appendChild(row);
+                });
+                
+                // Add event listeners to View Documents buttons
+                document.querySelectorAll('.view-verification-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const requestId = e.target.getAttribute('data-request-id');
+                        showVerificationDocuments(requestId);
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Error loading verification requests:', error);
+                const requestsTable = document.getElementById('verification-requests-table');
+                requestsTable.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Error loading verification requests: ${error.message}</td></tr>`;
+            }
+        }
+        
+        // Function to show verification documents
+        async function showVerificationDocuments(requestId) {
+            try {
+                console.log(`Loading verification documents for request ID: ${requestId}`);
+                
+                // Show the modal
+                const modalElement = document.getElementById('verificationModal');
+                const modal = new bootstrap.Modal(modalElement);
+                modal.show();
+                
+                // Show loading indicator
+                document.getElementById('verification-modal-content').innerHTML = `
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                `;
+                
+                // Get verification request data
+                const requestDoc = await getDoc(doc(db, 'doctorVerifications', requestId));
+                if (!requestDoc.exists()) {
+                    document.getElementById('verification-modal-content').innerHTML = '<div class="alert alert-danger">Verification request not found</div>';
+                    return;
+                }
+                
+                const requestData = requestDoc.data();
+                const userId = requestData.userId;
+                
+                // Get user data
+                const userDoc = await getDoc(doc(db, 'users', userId));
+                if (!userDoc.exists()) {
+                    document.getElementById('verification-modal-content').innerHTML = '<div class="alert alert-danger">User not found</div>';
+                    return;
+                }
+                
+                const userData = userDoc.data();
+                
+                // Get image URLs from Cloudinary (stored in requestData.imageUrls)
+                let imageUrls = [];
+                if (requestData.imageUrls && requestData.imageUrls.length > 0) {
+                    imageUrls = requestData.imageUrls;
+                }
+                
+                // Display verification request details and documents
+                let contentHTML = `
+                    <h4>Verification Documents</h4>
+                    ${imageUrls.length > 0 ? `
+                        <div class="row">
+                            ${imageUrls.map((url, index) => `
+                                <div class="col-md-4 mb-3">
+                                    <div class="card">
+                                        <div class="document-preview-container">
+                                            <img src="${url}" class="document-preview" alt="Document ${index + 1}">
+                                        </div>
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title">Document ${index + 1}</h5>
+                                            <a href="${url}" target="_blank" class="btn btn-sm btn-primary">View Full Size</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : '<div class="alert alert-warning">No documents found</div>'}
+                `;
+                
+                document.getElementById('verification-modal-content').innerHTML = contentHTML;
+                
+                // Set up approve and reject buttons
+                const approveBtn = document.getElementById('approve-verification-btn');
+                const rejectBtn = document.getElementById('reject-verification-btn');
+                
+                // Remove any existing event listeners
+                const newApproveBtn = approveBtn.cloneNode(true);
+                const newRejectBtn = rejectBtn.cloneNode(true);
+                approveBtn.parentNode.replaceChild(newApproveBtn, approveBtn);
+                rejectBtn.parentNode.replaceChild(newRejectBtn, rejectBtn);
+                
+                // Add new event listeners
+                newApproveBtn.addEventListener('click', () => approveDoctor(requestId, userId));
+                newRejectBtn.addEventListener('click', () => rejectDoctor(requestId, userId));
+                
+            } catch (error) {
+                console.error('Error loading verification documents:', error);
+                document.getElementById('verification-modal-content').innerHTML = `<div class="alert alert-danger">Error loading verification documents: ${error.message}</div>`;
+            }
+        }
+        
+        // Function to approve doctor
+        async function approveDoctor(requestId, userId) {
+            try {
+                // Get doctor verification data before updating
+                const requestDoc = await getDoc(doc(db, 'doctorVerifications', requestId));
+                if (!requestDoc.exists()) {
+                    alert('Verification request not found');
+                    return;
+                }
+                
+                const requestData = requestDoc.data();
+                
+                // Update verification request status
+                await updateDoc(doc(db, 'doctorVerifications', requestId), {
+                    status: 'approved',
+                    approvedAt: Timestamp.now(),
+                    approvedBy: auth.currentUser.uid
+                });
+                
+                // Get the selfie URL (second image in the array - index 1)
+                const selfieUrl = requestData.imageUrls && requestData.imageUrls.length > 1 ? requestData.imageUrls[1] : null;
+                
+                // Update user to be a doctor
+                await updateDoc(doc(db, 'users', userId), {
+                    isDoctor: true,
+                    doctorApprovedAt: Timestamp.now(),
+                    verificationSelfie: selfieUrl, // Save the selfie as profile picture
+                    specialty: requestData.specialty || '',
+                    experience: requestData.experience || '',
+                    licenseNumber: requestData.licenseNumber || '',
+                    phone: requestData.phone || '',
+                    address: requestData.address || ''
+                });
+                
+                // Create a new doctor entry in the doctors collection
+                await setDoc(doc(db, 'doctors', userId), {
+                    userId: userId,
+                    username: requestData.name || '',
+                    email: requestData.email || '',
+                    specialty: requestData.specialty || '',
+                    experience: requestData.experience || '',
+                    licenseNumber: requestData.licenseNumber || '',
+                    phone: requestData.phone || '',
+                    address: requestData.address || '',
+                    imageUrls: requestData.imageUrls || [],
+                    createdAt: Timestamp.now(),
+                    onLeave: false,
+                    inactive: false
+                });
+                
+                // Close the modal
+                const modalElement = document.getElementById('verificationModal');
+                const modal = bootstrap.Modal.getInstance(modalElement);
+                modal.hide();
+                
+                // Reload verification requests and doctors list
+                loadVerificationRequests();
+                loadDoctors();
+                
+                // Show success message
+                alert('Doctor application approved successfully!');
+                
+                // Add notification for the user
+                await addDoc(collection(db, 'notifications'), {
+                    userId: userId,
+                    type: 'doctor_approved',
+                    title: 'Doctor Application Approved',
+                    message: 'Congratulations! Your application to become a doctor has been approved.',
+                    createdAt: Timestamp.now(),
+                    read: false
+                });
+                
+            } catch (error) {
+                console.error('Error approving doctor:', error);
+                alert(`Error approving doctor: ${error.message}`);
+            }
+        }
+        
+        // Function to reject doctor
+        async function rejectDoctor(requestId, userId) {
+            try {
+                // Ask for rejection reason
+                const reason = prompt('Please provide a reason for rejection:');
+                if (reason === null) return; // User cancelled
+                
+                // Update verification request status
+                await updateDoc(doc(db, 'doctorVerifications', requestId), {
+                    status: 'rejected',
+                    rejectedAt: Timestamp.now(),
+                    rejectedBy: auth.currentUser.uid,
+                    rejectionReason: reason
+                });
+                
+                // Close the modal
+                const modalElement = document.getElementById('verificationModal');
+                const modal = bootstrap.Modal.getInstance(modalElement);
+                modal.hide();
+                
+                // Reload verification requests
+                loadVerificationRequests();
+                
+                // Show success message
+                alert('Doctor application rejected successfully!');
+                
+                // Add notification for the user
+                await addDoc(collection(db, 'notifications'), {
+                    userId: userId,
+                    type: 'doctor_rejected',
+                    title: 'Doctor Application Rejected',
+                    message: `Your application to become a doctor was rejected. Reason: ${reason}`,
+                    createdAt: Timestamp.now(),
+                    read: false
+                });
+                
+            } catch (error) {
+                console.error('Error rejecting doctor:', error);
+                alert(`Error rejecting doctor: ${error.message}`);
+            }
+        }
+
+        // Load appointments data
+        async function loadAppointments() {
+            try {
+                const appointmentsTable = document.getElementById('appointments-table');
+                appointmentsTable.innerHTML = '<tr><td colspan="6" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>';
+
+                // Fetch all users and build a map of userId -> username
+                const usersSnapshot = await getDocs(collection(db, 'users'));
+                const userMap = {};
+                usersSnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    userMap[doc.id] = data.username || data.name || data.email || 'N/A';
+                });
+
+                // Fetch all appointments
+                const appointmentsSnapshot = await getDocs(collection(db, 'doctorPatientMatches'));
+                let appointments = [];
+                appointmentsSnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    appointments.push({
+                        id: doc.id,
+                        ...data,
+                        createdAt: data.createdAt ? data.createdAt.toDate() : null,
+                        patientUsername: userMap[data.patientId] || data.patientName || 'N/A',
+                        doctorUsername: userMap[data.doctorId] || data.doctorName || 'N/A',
+                    });
+                });
+
+                // Filtering and sorting
+                const searchInput = document.getElementById('appointment-search').value.trim().toLowerCase();
+                const sortValue = document.getElementById('appointment-sort').value;
+
+                // Filter by search
+                if (searchInput) {
+                    appointments = appointments.filter(app =>
+                        app.patientUsername.toLowerCase().includes(searchInput) ||
+                        app.doctorUsername.toLowerCase().includes(searchInput)
+                    );
+                }
+
+                // Sort
+                switch (sortValue) {
+                    case 'latest':
+                        appointments.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                        break;
+                    case 'oldest':
+                        appointments.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+                        break;
+                    case 'patient_az':
+                        appointments.sort((a, b) => a.patientUsername.localeCompare(b.patientUsername));
+                        break;
+                    case 'patient_za':
+                        appointments.sort((a, b) => b.patientUsername.localeCompare(a.patientUsername));
+                        break;
+                    case 'doctor_az':
+                        appointments.sort((a, b) => a.doctorUsername.localeCompare(b.doctorUsername));
+                        break;
+                    case 'doctor_za':
+                        appointments.sort((a, b) => b.doctorUsername.localeCompare(a.doctorUsername));
+                        break;
+                    default:
+                        appointments.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                }
+
+                // Render
+                appointmentsTable.innerHTML = '';
+                if (appointments.length === 0) {
+                    appointmentsTable.innerHTML = '<tr><td colspan="6" class="text-center">No appointments found</td></tr>';
+                    return;
+                }
+                appointments.forEach(app => {
+                    let dateDisplay = app.createdAt ? app.createdAt.toLocaleDateString() : 'N/A';
+                    let timeDisplay = app.createdAt ? app.createdAt.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A';
+                    let statusBadge = '';
+                    let canCancel = false;
+                    switch(app.status) {
+                        case 'active':
+                            statusBadge = '<span class="badge bg-primary">Active</span>';
+                            canCancel = true;
+                            break;
+                        case 'completed':
+                            statusBadge = '<span class="badge bg-success">Completed</span>';
+                            canCancel = false;
+                            break;
+                        case 'cancelled':
+                            statusBadge = '<span class="badge bg-danger">Cancelled</span>';
+                            canCancel = false;
+                            break;
+                        default:
+                            statusBadge = '<span class="badge bg-warning text-dark">Pending</span>';
+                            canCancel = true;
+                    }
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${dateDisplay}</td>
+                        <td>${timeDisplay}</td>
+                        <td>${app.patientUsername}</td>
+                        <td>${app.doctorUsername}</td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary view-appointment-btn" data-appointment-id="${app.id}">View</button>
+                            ${canCancel ? `<button class="btn btn-sm btn-outline-danger cancel-appointment-btn" data-appointment-id="${app.id}">Cancel</button>` : ''}
+                        </td>
+                    `;
+                    appointmentsTable.appendChild(row);
+                });
+
+                // Add event listeners
+                document.querySelectorAll('.view-appointment-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const appointmentId = e.target.getAttribute('data-appointment-id');
+                        viewAppointmentDetails(appointmentId);
+                    });
+                });
+                document.querySelectorAll('.cancel-appointment-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const appointmentId = e.target.getAttribute('data-appointment-id');
+                        cancelAppointment(appointmentId);
+                    });
+                });
+            } catch (error) {
+                const appointmentsTable = document.getElementById('appointments-table');
+                appointmentsTable.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error loading appointments: ${error.message}</td></tr>`;
+            }
+        }
+        
+        // View appointment details
+        async function viewAppointmentDetails(appointmentId) {
+            try {
+                // Get appointment data
+                const appointmentDoc = await getDoc(doc(db, 'doctorPatientMatches', appointmentId));
+                
+                if (!appointmentDoc.exists()) {
+                    alert('Appointment not found');
+                    return;
+                }
+                
+                const appointmentData = appointmentDoc.data();
+                
+                // Format date and time
+                let dateTimeStr = 'N/A';
+                if (appointmentData.createdAt) {
+                    const date = appointmentData.createdAt.toDate();
+                    dateTimeStr = `${date.toLocaleDateString()} at ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                }
+                
+                // Format completion date if available
+                let completedDateStr = 'N/A';
+                if (appointmentData.completedAt) {
+                    const date = appointmentData.completedAt.toDate();
+                    completedDateStr = `${date.toLocaleDateString()} at ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                }
+                
+                // Create modal content
+                const modalContent = `
+                    <div class="modal-header">
+                        <h5 class="modal-title">Appointment Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <p><strong>Patient:</strong> ${appointmentData.patientName || 'N/A'}</p>
+                                <p><strong>Doctor:</strong> ${appointmentData.doctorName || 'N/A'}</p>
+                                <p><strong>Date Created:</strong> ${dateTimeStr}</p>
+                                <p><strong>Status:</strong> ${appointmentData.status || 'N/A'}</p>
+                                ${appointmentData.status === 'completed' ? `<p><strong>Completed On:</strong> ${completedDateStr}</p>` : ''}
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Symptoms:</strong> ${appointmentData.symptoms || 'N/A'}</p>
+                                <p><strong>Description:</strong> ${appointmentData.description || 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                `;
+                
+                // Create or get modal element
+                let modalElement = document.getElementById('appointmentDetailsModal');
+                
+                if (!modalElement) {
+                    modalElement = document.createElement('div');
+                    modalElement.className = 'modal fade';
+                    modalElement.id = 'appointmentDetailsModal';
+                    modalElement.setAttribute('tabindex', '-1');
+                    modalElement.setAttribute('aria-labelledby', 'appointmentDetailsModalLabel');
+                    modalElement.setAttribute('aria-hidden', 'true');
+                    
+                    modalElement.innerHTML = `<div class="modal-dialog modal-lg"><div class="modal-content"></div></div>`;
+                    document.body.appendChild(modalElement);
+                }
+                
+                // Set modal content
+                modalElement.querySelector('.modal-content').innerHTML = modalContent;
+                
+                // Show modal
+                const modal = new bootstrap.Modal(modalElement);
+                modal.show();
+                
+            } catch (error) {
+                console.error('Error viewing appointment details:', error);
+                alert(`Error viewing appointment details: ${error.message}`);
+            }
+        }
+        
+        // Cancel appointment
+        async function cancelAppointment(appointmentId) {
+            try {
+                // Confirm cancellation
+                if (!confirm('Are you sure you want to cancel this appointment?')) {
+                    return;
+                }
+                
+                // Update appointment status to cancelled
+                await updateDoc(doc(db, 'doctorPatientMatches', appointmentId), {
+                    status: 'cancelled',
+                    cancelledAt: Timestamp.now(),
+                    cancelledBy: 'admin'
+                });
+                
+                // Reload appointments
+                loadAppointments();
+                
+                // Show success message
+                alert('Appointment cancelled successfully');
+                
+            } catch (error) {
+                console.error('Error cancelling appointment:', error);
+                alert(`Error cancelling appointment: ${error.message}`);
+            }
+        }
+
+        // Settings form submission
+        document.getElementById('settings-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            alert('Settings saved successfully!');
+        });
+
+        // Add user button click handler
+        document.getElementById('add-user-btn').addEventListener('click', () => {
+            alert('Add user functionality will be implemented here.');
+        });
+
+        // Add doctor button click handler
+        document.getElementById('add-doctor-btn').addEventListener('click', () => {
+            alert('Add doctor functionality will be implemented here.');
+        });
+
+        // Add event listeners for search and sort
+        if (document.getElementById('appointment-search')) {
+            document.getElementById('appointment-search').addEventListener('input', loadAppointments);
+        }
+        if (document.getElementById('appointment-sort')) {
+            document.getElementById('appointment-sort').addEventListener('change', loadAppointments);
+        }
+    </script>
+</body>
+</html>
